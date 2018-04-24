@@ -3,3 +3,4 @@ test/
 testing/
 .vagrant/
 .DS_Store
+packer_cache/

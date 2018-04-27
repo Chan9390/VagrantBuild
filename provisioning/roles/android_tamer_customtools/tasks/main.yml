@@ -1,7 +1,6 @@
 ---
-- name: install tools from ubuntu repositories
+- name: Install tools from Ubuntu repositories
   become: yes
-  become_method: sudo
   apt: pkg="{{ item }}" state=latest
   with_items:
   # - gcc-arm-linux-androidabi
@@ -22,34 +21,31 @@
   - python-meld3
 
 
-- name: notsure where this fits
+- name: Not sure where this fits
   become: yes
-  become_method: sudo
   apt: pkg="{{ item }}" state=latest
   with_items:
   - python-frida
   - geany
   - geany-plugin-treebrowser
-  
+
 - name: Tools utilities created by anantshri
   become: yes
-  become_method: sudo
   apt: pkg="{{ item }}" state=latest
   with_items:
   - apk2java
-  - drozer-checks
+#  - drozer-checks
   - androidtamer-adb
 
 
 
-- name: optional packages but might be useful
+- name: Optional packages but might be useful
   become: yes
-  become_method: sudo
   apt: pkg="{{ item }}" state=latest
   with_items:
   - openvpn
   # - pdfcrack
-  - ratproxy 
+  - ratproxy
   - proxychains
   - tsocks
   - redsocks
@@ -59,4 +55,3 @@
   - dsniff
   - iceweasel
   - chromium
-

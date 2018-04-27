@@ -1,7 +1,6 @@
 ---
 - name: Forensics Tools
   become: yes
-  become_method: sudo
   apt: pkg="{{ item }}" state=latest
   with_items:
   - volatility
@@ -9,7 +8,7 @@
   - autopsy
   - dc3dd
   - dcfldd
-  - dff
+#  - dff
   - ext4magic
   - scalpel
   - sleuthkit
@@ -26,7 +25,7 @@
   - testdisk
   - steghide
   - iwatch
-  - forensics-all
+#  - forensics-all
   - guymager
   - rdd
   - xmount

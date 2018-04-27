@@ -1,7 +1,6 @@
 ---
 - name: Static Anaylsis Tools
   become: yes
-  become_method: sudo
   apt: pkg="{{ item }}" state=latest
   with_items:
   - findbugs

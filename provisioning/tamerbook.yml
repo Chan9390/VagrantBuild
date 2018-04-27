@@ -1,6 +1,5 @@
 ---
 - hosts: all
-  sudo: false
   roles:
   - essentials
   - android_tamer_repository
@@ -14,7 +13,7 @@
   - android_tamer_pentest
   - android_tamer_rom_dev
   - android_tamer_rooting
-  - android_tamer_static_anaylsis
+  - android_tamer_static_analysis
   - android_tamer_ui
   - android_tamer_customtools
   - android_tamer_wallpaper

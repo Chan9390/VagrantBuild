@@ -1,57 +1,48 @@
 ---
-- name: get the current users home
+- name: Get the current users home
   shell: echo $HOME
   register: user_home
-  sudo: no
 
-- name: get the current users name
+- name: Get the current users name
   shell: id -u -n
   register: user_name
-  sudo: no
 
-- name: get the current users group
+- name: Get the current users group
   shell: id -g -n
   register: user_group
-  sudo: no
 
-- name: update apt-get cache 
+- name: Update apt-get cache
   become: yes
-  become_method: sudo
   apt: update_cache=yes
 
-- name: upgrade to latest
+- name: Upgrade to latest
   become: yes
-  become_method: sudo
   apt: upgrade=dist
 
 - name: Installing ca-certificates-java from backports
   become: yes
-  become_method: sudo
   apt: name=ca-certificates-java state=latest default_release=jessie-backports update_cache=yes
 
 
-- name: install packages essential for android
+- name: Install packages essential for android
   become: yes
-  become_method: sudo
   apt: pkg="{{ item }}" state=latest
   with_items:
-  - openjdk-7-jdk
   - default-jdk
   - openjdk-8-jdk
-  - libc6-i386 
-  - lib32stdc++6 
-  - lib32gcc1 
-  - lib32ncurses5 
-  - zlib1g 
+  - libc6-i386
+  - lib32stdc++6
+  - lib32gcc1
+  - lib32ncurses5
+  - zlib1g
   - lib32z1
   - htop
   - vim
 
 # "
 
-- name: install more essential packages found in default repositories
+- name: Install more essential packages found in default repositories
   become: yes
-  become_method: sudo
   apt: pkg="{{ item }}" state=latest
   with_items:
   - aapt
@@ -65,9 +56,8 @@
   - smali
 
 
-- name: install more androidsdk packages from default repositories
+- name: Install more androidsdk packages from default repositories
   become: yes
-  become_method: sudo
   apt: pkg="{{ item }}" state=latest
   with_items:
     - android-tools-fsutils
@@ -80,14 +70,14 @@
 
 - name: Installing PIP
   become: yes
-  become_method: sudo
   apt: pkg=python-pip state=installed
 
-- name: installing ubuntu mate packages
+- name: Installing ubuntu mate packages
   become: yes
-  become_method: sudo
   apt: pkg="{{ item }}" state=latest
   with_items:
+  - mate-desktop-environment-core
+  - mate-gnome-main-menu-applet
   - mate-desktop-environment
   - mate-system-tools
   - mate-netspeed
@@ -97,7 +87,6 @@
 
 - name: Mate specific packages
   become: yes
-  become_method: sudo
   apt: pkg="{{ item }}" state=latest
   with_items:
   - caja-gksu
@@ -109,9 +98,9 @@
 # "
 
 
-- service: name=lightdm enabled=yes
+- name: Enable lightdm service
+  service: name=lightdm enabled=yes
   become: yes
-  become_method: sudo
 
 #- name: restart machine
 #    become: yes
@@ -128,21 +117,22 @@
 
 - name: temp directory created
   become: yes
-  become_method: sudo
   command: mkdir /tmp/x
   ignore_errors: true
+  args:
+    creates: /tmp/x/
 
-- name: mount virtualbox guest aditions in it
-  become: yes
-  become_method: sudo
-  command: mount /dev/sr0 /tmp/x
-  ignore_errors: true
+#- name: mount virtualbox guest aditions in it
+#  become: yes
+#  become_method: sudo
+#  command: mount /dev/sr0 /tmp/x
+#  ignore_errors: true
 
-- name: Reconfiguring Linux guest adition to support GUI
-  become: yes
-  become_method: sudo
-  command: /tmp/x/VBoxLinuxAdditions.run 
-  ignore_errors: true
+#- name: Reconfiguring Linux guest adition to support GUI
+#  become: yes
+#  become_method: sudo
+#  command: /tmp/x/VBoxLinuxAdditions.run
+#  ignore_errors: true
 
 #- name: restart machine
 #    become: yes
@@ -157,9 +147,8 @@
 #                state=started
 #  sudo: false
 
-- name: Configure tamer_specific application peferences 
+- name: Configure tamer_specific application peferences
   become: yes
-  become_method: sudo
   apt: pkg="{{ item }}" state=latest
   with_items:
   - terminator
@@ -180,16 +169,14 @@
   - curl
 
 # Fonts also need to go and google fonts need to be installed"
-  
 
-- name: make /opt dir for Arsenal
+
+- name: Make /opt dir for Arsenal
   file: path="/opt/Arsenal" state=directory
   become: yes
-  become_method: sudo
 
-- name: change permission of /Arsenal
+- name: Change permission of /Arsenal
   become: yes
-  become_method: sudo
   action: file path="/opt/Arsenal" recurse=yes state=directory owner={{ user_name.stdout }} group={{ user_group.stdout }}
 
 
@@ -205,44 +192,43 @@
 - name: Create conf folder in home directory
   file: path=/home/{{ user_name.stdout }}/conf/ state=directory owner={{ user_name.stdout }}
 
-- name: deploy .zshrc
+- name: Deploy .zshrc
   template: src=files/zshrc.in dest=/home/{{ user_name.stdout }}/conf/zshrc owner={{ user_name.stdout }}
 
-- name: remove standard zshrc
+- name: Remove standard zshrc
   file: path=/home/{{ user_name.stdout }}/.zshrc state=absent
 
-- name: symlink zshrc
+- name: Symlink zshrc
   file: path=/home/{{ user_name.stdout }}/.zshrc src=/home/{{ user_name.stdout }}/conf/zshrc state=link owner={{ user_name.stdout }}
 
 - name: Set zsh as default shell
   user: name={{ user_name.stdout }} shell=/bin/zsh
   become: yes
-  become_method: sudo
 
 - name: Adding ZSH Autosuggestions
   git: repo=https://github.com/zsh-users/zsh-autosuggestions dest=/{{ user_home.stdout }}/.zsh/zsh-autosuggestions
 
-- name: configuring Autosuggestions
+- name: Configuring Autosuggestions
   action: lineinfile dest={{ user_home.stdout }}/.zshrc line="source /home/{{ user_name.stdout }}/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
-- name: configuring vim
+- name: Configuring vim
   template: src=files/vimrc dest={{ user_home.stdout }}/.vimrc owner={{ user_name.stdout }}
 
-- name: create terminator config directory.
-  sudo: no
+- name: Create terminator config directory.
   command: mkdir -p {{ user_home.stdout }}/.config/terminator/
   ignore_errors: true
+  args:
+    creates: '{{ user_home.stdout }}/.config/terminator/'
 
-- name: configuring terminator
+- name: Configuring terminator
   template: src=files/terminator_config dest={{ user_home.stdout }}/.config/terminator/config owner={{ user_name.stdout }}
 
 - name: Set terminator as default shell
   command: update-alternatives --set x-terminal-emulator /usr/bin/terminator
   become: yes
-  become_method: sudo
 
-- name: setting open alias for xdg-open
+- name: Setting open alias for xdg-open
   action: lineinfile dest={{ user_home.stdout }}/.bashrc line="alias open=xdg-open"
 
-- name: setting alias
+- name: Setting alias
   action: lineinfile dest={{ user_home.stdout }}/.zshrc line="alias open=xdg-open"

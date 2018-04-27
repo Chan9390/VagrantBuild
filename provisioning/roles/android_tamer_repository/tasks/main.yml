@@ -1,40 +1,35 @@
 ---
 - name: Install PyCurl (required for apt-repository updates)
   become: yes
-  become_method: sudo
   apt: pkg="{{ item }}" state=latest
   with_items:
   - python-pycurl
   - apt-transport-https
 
-- name: Configure android Tamer repository
+- name: Configure Android Tamer repository
   become: yes
-  become_method: sudo
   apt_repository: repo="deb https://repo.androidtamer.com Tamer4 main"
 
 
 
-# - lineinfile: dest=/etc/apt/source.list.d/androidtamer 
-#               line="deb http://repo.androidtamer.com Tamer4 main"  
-#               state=present  
-#               owner=root 
-#               group=root 
+# - lineinfile: dest=/etc/apt/source.list.d/androidtamer
+#               line="deb http://repo.androidtamer.com Tamer4 main"
+#               state=present
+#               owner=root
+#               group=root
 #               mode=0644
 #               create=True
 
 - name: Adding Apt key
   become: yes
-  become_method: sudo
   apt_key: id=7EE83BCF url=https://repo.androidtamer.com/tamer.gpg.key state=present
 
 - name: add backports repository
   become: yes
-  become_method: sudo
   apt_repository: repo='deb http://http.debian.net/debian jessie-backports main contrib non-free' state=present update_cache=yes
 
 - name: add non-free repository
   become: yes
-  become_method: sudo
   apt_repository: repo='deb http://ftp.us.debian.org/debian/ jessie main contrib non-free' state=present update_cache=yes
 
 

@@ -1,8 +1,7 @@
 ---
-- name: install androidtamer-wallpaper packages
+- name: Install androidtamer-wallpaper packages
   apt: pkg=androidtamer-wallpaper state=latest
   become: yes
-  become_method: sudo
 
 
 # - name: setup androidtamer-wallpaper
